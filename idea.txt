@@ -1,1 +1,32 @@
 Our App Idea
+
+social and personal pregnant mothers or soon-to-be pregnant mothers
+
+purpose: relieve stress
+
+activity level - maybe connect with apple watch if they have
+if not, then maybe connect with Apple Health app
+
+pages
+1. home page - overview, show a little bit of everything
+2. daily mental health check-in
+    returns statistics on mood swings / emotions
+    track progress
+    allows them to reflect on how they are doing each day
+    reccommend external guided meditations (calm.com)
+
+3. AI chatbot trained on pregnancy and birth, mothers can report symptoms and receive advice
+    in-app emergency feature - notify doctors/emotions
+    can report abnormalities throughout pregnancy
+
+4. Reddit-style community forum for pregnant mothers where they ask questions, share information, etc.
+    post
+    reply
+    upvote/downvote
+    can follow other profiles and dm
+    anonymous posting option (can request to follow/dm)
+
+5. profile
+    shows mental health progress
+    followers/following
+    direct messaging
