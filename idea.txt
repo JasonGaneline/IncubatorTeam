@@ -1,32 +1,184 @@
 Our App Idea
 
-social and personal pregnant mothers or soon-to-be pregnant mothers
+app designed primarily for pregnant women, but could also be used by women curious about pregnancy
 
-purpose: relieve stress
+purpose: relieve stress, provide information/community, keep them secure during pregnancy
 
-activity level - maybe connect with apple watch if they have
-if not, then maybe connect with Apple Health app
+pages/features
 
-pages
-1. home page - overview, show a little bit of everything
-2. daily mental health check-in
+SignUp / LogIn w/ User authentication
+
+1. daily mental health check-in (evaluation)
     returns statistics on mood swings / emotions
-    track progress
-    allows them to reflect on how they are doing each day
-    reccommend external guided meditations (calm.com)
+    track progress over time
+    allows them to reflect on how they are feeling each day
 
-3. AI chatbot trained on pregnancy and birth, mothers can report symptoms and receive advice
-    in-app emergency feature - notify doctors/emotions
+2. (Potentially) - AI chatbot trained on pregnancy and birth, mothers can report symptoms and receive advice
     can report abnormalities throughout pregnancy
+
+3. in-app emergency feature - notify doctor and emergency services
 
 4. Reddit-style community forum for pregnant mothers where they ask questions, share information, etc.
     post
-    reply
-    upvote/downvote
+    reply (notifies you when others reply to you)
+    upvote/downvote system
     can follow other profiles and dm
     anonymous posting option (can request to follow/dm)
 
 5. profile
-    shows mental health progress
-    followers/following
-    direct messaging
+    displays:
+        mental health check-in progress
+        followers/following
+        direct messaging feature
+        representation of size of baby based on # of weeks pregnant
+            e.g. size of an apple, orange, watermelon, etc.
+        estimation of when you will hear heartbeat, find out gender
+        tell mother what specifically is happening in her body at any point during pregnancy
+            e.g. baby's organs are being developed
+
+Tech Stack:
+Frontend: React
+Backend: Python + FastAPI
+
+Used ChatGPT to try to divide the work
+
+👩‍💻 FRONTEND 1 — UI / Layout Owner
+🎯 You own how everything looks.
+Responsibilities:
+1️⃣ Authentication UI
+Signup page layout
+
+Login page layout
+
+Input components (email, password, etc.)
+
+2️⃣ Mental Health Check-In UI
+Mood selection buttons (emoji/cards)
+
+Reflection text box
+
+Submit button
+
+Mood history display layout (charts/visual boxes)
+
+3️⃣ Community UI
+Post feed layout
+
+PostCard component
+
+Reply section UI
+
+Upvote/Downvote button visuals
+
+4️⃣ Profile UI
+Profile header (name, week pregnant)
+
+Mood progress section layout
+
+Baby size visualization section (static display design)
+
+Followers/following section layout
+
+👉 You DO NOT handle API logic — just clean UI structure.
+
+👩‍💻 FRONTEND 2 — Logic / API Integration Owner
+🎯 You make everything functional.
+Responsibilities:
+1️⃣ Authentication Logic
+Handle form state
+
+Call backend login/signup APIs
+
+Store JWT token
+
+Protect routes (private pages)
+
+2️⃣ Mental Health Check-In Logic
+Submit mood data to backend
+
+Fetch mood history
+
+Calculate simple statistics for display
+
+3️⃣ Community Logic
+Fetch posts from backend
+
+Submit new posts
+
+Handle replies
+
+Handle upvote/downvote actions
+
+4️⃣ Profile Data Integration
+Fetch user info
+
+Fetch follower count
+
+Fetch pregnancy week info
+
+Connect mood stats to profile page
+
+⚙️ BACKEND 1 — Auth + User System
+🎯 Owns Users + Security
+Responsibilities:
+1️⃣ User Model
+id
+
+email
+
+password (hashed)
+
+pregnancy_week
+
+created_at
+
+2️⃣ Authentication System
+Signup endpoint
+
+Login endpoint
+
+JWT token generation
+
+Password hashing
+
+3️⃣ Profile Endpoint
+Get user info
+
+Update pregnancy week
+
+Get follower/following counts
+
+4️⃣ Follow System
+Follow user
+
+Unfollow user
+
+⚙️ BACKEND 2 — Mental Health + Community System
+🎯 Owns app content + interactions
+Responsibilities:
+1️⃣ Mood Check-In System
+Mood model
+
+POST mood endpoint
+
+GET mood history endpoint
+
+Return aggregated mood stats
+
+2️⃣ Community System
+Post model
+
+Reply model
+
+Upvote model
+
+Endpoints:
+
+Create post
+
+Get posts
+
+Create reply
+
+Upvote/downvote
+
