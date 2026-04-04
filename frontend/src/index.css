@@ -1,0 +1,16 @@
+/* Pull in Tailwind and connect our JS config (semantic colors live in tailwind.config.js). */
+@import "tailwindcss";
+@config "../tailwind.config.js";
+
+/* ---------------------------------------------------------------------------
+   Global base styles — keep this file small; components use utility classes.
+   --------------------------------------------------------------------------- */
+@layer base {
+  body {
+    @apply min-h-svh bg-background font-sans text-foreground antialiased;
+  }
+
+  #root {
+    @apply min-h-svh;
+  }
+}

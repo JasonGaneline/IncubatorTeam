@@ -1,0 +1,27 @@
+backend/
+├── .env.example                 # Copy → `.env`; holds DATABASE_URL, SECRET_KEY, CORS
+├── requirements.txt
+├── alembic.ini
+├── alembic/
+│   ├── env.py                   # Loads app settings + Base.metadata, runs migrations
+│   ├── script.py.mako
+│   └── versions/
+│       └── 20260403_01_initial_users.py
+└── app/
+    ├── main.py                  # FastAPI app, CORS, `/api/v1` routers, `/health`
+    ├── core/
+    │   ├── config.py            # pydantic-settings (DATABASE_URL, JWT, CORS)
+    │   ├── database.py          # Engine, SessionLocal, Base, get_db()
+    │   └── security.py          # bcrypt (Passlib), JWT create/decode
+    ├── models/
+    │   ├── __init__.py          # Registers models for Alembic
+    │   └── user.py              # User ORM
+    ├── schemas/
+    │   ├── user.py              # UserPublic
+    │   └── auth.py              # UserSignup, UserLogin, TokenWithUser
+    ├── crud/
+    │   └── crud_user.py         # get_user_by_email, create_user
+    └── api/
+        ├── deps.py              # Re-exports get_db for routers
+        └── routers/
+            └── auth.py          # POST /signup, POST /login

@@ -14,7 +14,7 @@ SignUp / LogIn w/ User authentication
     allows them to reflect on how they are feeling each day
 
 2. (Potentially) - AI chatbot trained on pregnancy and birth, mothers can report symptoms and receive advice
-    can report abnormalities throughout pregnancy
+    can report abnormalities throughout pregnancy. RAG feature that uses AI with database information to suggest some kind of personalized support
 
 3. in-app emergency feature - notify doctor and emergency services
 
