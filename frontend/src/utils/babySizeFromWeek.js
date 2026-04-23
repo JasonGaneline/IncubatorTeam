@@ -1,6 +1,5 @@
 /**
- * Fallback baby-size copy when the API returns `pregnancyWeek` but not a `babySize` object.
- * Replace or remove once the backend always sends `babySize` from mockProfile.json.
+ * Fallback baby-size copy when the API returns only `pregnancyWeek`.
  */
 
 export function getBabySizeFromWeek(week) {

@@ -20,6 +20,7 @@ class Settings(BaseSettings):
     SECRET_KEY: str
     JWT_ALGORITHM: str = "HS256"
     ACCESS_TOKEN_EXPIRE_MINUTES: int = 60
+    GOOGLE_CLIENT_ID: str | None = None
 
     # Browser clients (React/Vite) need explicit CORS allowlist when calling this API.
     CORS_ORIGINS: str = "http://localhost:5173"
@@ -33,4 +34,3 @@ class Settings(BaseSettings):
 def get_settings() -> Settings:
     """Cached settings instance — avoids re-parsing env on every request."""
     return Settings()
-

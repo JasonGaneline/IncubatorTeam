@@ -8,7 +8,7 @@ import { useProfileData } from '../../hooks/useProfileData.js'
 import { MainNav } from '../../layouts/MainNav.jsx'
 
 /**
- * ProfilePage — composes profile sections; data arrives from useProfileData (mock → API).
+ * ProfilePage composes profile sections from real API data.
  */
 
 function formatDueDate(iso) {

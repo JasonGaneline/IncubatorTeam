@@ -1,5 +1,5 @@
 /**
- * ProfileHeader — name + pregnancy week chip; purely presentational.
+ * ProfileHeader is purely presentational.
  */
 
 export function ProfileHeader({ displayName, pregnancyWeek, dueDateLabel }) {
@@ -21,7 +21,7 @@ export function ProfileHeader({ displayName, pregnancyWeek, dueDateLabel }) {
           Pregnancy week
         </span>
         <span className="text-2xl font-semibold tabular-nums text-foreground">
-          Week {pregnancyWeek}
+          {pregnancyWeek ? `Week ${pregnancyWeek}` : 'Not set yet'}
         </span>
       </div>
     </header>

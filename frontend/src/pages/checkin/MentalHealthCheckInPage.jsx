@@ -1,10 +1,15 @@
-import mockMoodHistory from '../../data/mockMoodHistory.json'
-import { Button, InlineNotice, MoodHistorySection, MoodSelector, ReflectionTextArea } from '../../common/ui/index.js'
+import {
+  Button,
+  InlineNotice,
+  MoodHistorySection,
+  MoodSelector,
+  ReflectionTextArea,
+} from '../../common/ui/index.js'
 import { useMentalHealthCheckIn } from '../../hooks/useMentalHealthCheckIn.js'
 import { MainNav } from '../../layouts/MainNav.jsx'
 
 /**
- * MentalHealthCheckInPage — smart page: hook + reusable UI + static history preview.
+ * MentalHealthCheckInPage is backed by the real check-in API and history.
  */
 
 export function MentalHealthCheckInPage() {
@@ -18,6 +23,10 @@ export function MentalHealthCheckInPage() {
     isSubmitting,
     statusMessage,
     error,
+    history,
+    historyError,
+    isHistoryLoading,
+    refetchHistory,
   } = useMentalHealthCheckIn()
 
   return (
@@ -32,7 +41,7 @@ export function MentalHealthCheckInPage() {
             Daily check-in
           </h1>
           <p className="mt-2 text-sm text-muted-foreground">
-            Name what you feel, reflect if you want, and watch patterns emerge over time.
+            Name what you feel, reflect if you want, and build a real history over time.
           </p>
         </header>
 
@@ -68,7 +77,26 @@ export function MentalHealthCheckInPage() {
         </form>
 
         <div className="mt-10">
-          <MoodHistorySection data={mockMoodHistory} />
+          {historyError ? (
+            <div className="rounded-2xl border border-danger/30 bg-accent/20 p-6">
+              <p className="text-sm text-accent-foreground">{historyError}</p>
+              <Button
+                type="button"
+                variant="secondary"
+                className="mt-4"
+                fullWidth={false}
+                onClick={() => refetchHistory()}
+              >
+                Try again
+              </Button>
+            </div>
+          ) : isHistoryLoading ? (
+            <div className="rounded-2xl border border-border bg-surface p-6 text-sm text-muted-foreground">
+              Loading your check-in history…
+            </div>
+          ) : (
+            <MoodHistorySection data={history} />
+          )}
         </div>
       </div>
     </div>

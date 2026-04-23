@@ -1,9 +1,9 @@
 """
-Password hashing (Passlib + bcrypt) and JWT access tokens (python-jose).
+Password hashing and JWT access tokens.
 
-Security notes:
-- bcrypt truncates passwords longer than 72 bytes — validate max length at the schema layer if needed.
-- Store only hashed passwords in PostgreSQL; never log raw passwords.
+We prefer `pbkdf2_sha256` for new passwords because it is stable in this environment
+and does not depend on the external bcrypt package behaving perfectly across Python versions.
+`bcrypt` remains in the list so older hashes can still be verified if they already exist.
 """
 
 from datetime import UTC, datetime, timedelta
@@ -14,7 +14,10 @@ from passlib.context import CryptContext
 
 from app.core.config import get_settings
 
-pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
+pwd_context = CryptContext(
+    schemes=["pbkdf2_sha256", "bcrypt"],
+    deprecated="auto",
+)
 
 
 def hash_password(plain_password: str) -> str:

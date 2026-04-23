@@ -1,5 +1,5 @@
 /**
- * ProfileSocialCounts — followers / following placeholders for the forum & DM features.
+ * ProfileSocialCounts shows real follower totals from the API.
  */
 
 export function ProfileSocialCounts({ socialCounts }) {
@@ -17,7 +17,7 @@ export function ProfileSocialCounts({ socialCounts }) {
         Community
       </h2>
       <p className="mt-1 text-sm text-muted-foreground">
-        Counts are sample values until the follow system is wired to the API.
+        Your current follower and following counts.
       </p>
       <div className="mt-5 grid grid-cols-2 gap-3">
         <div className="rounded-xl border border-border bg-muted/40 px-4 py-4 text-center">

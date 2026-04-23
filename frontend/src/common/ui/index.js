@@ -5,6 +5,7 @@
  */
 
 export { Button } from './Button.jsx'
+export { GoogleSignInSection } from './GoogleSignInSection.jsx'
 export { TextField } from './TextField.jsx'
 export { InlineNotice } from './InlineNotice.jsx'
 export { MoodSelector } from './MoodSelector.jsx'

@@ -1,13 +1,10 @@
 import { useCallback, useState } from 'react'
 
+import { loginWithEmail, saveAuthSession } from '../utils/authApi.js'
+
 /**
- * useLoginForm — "smart" hook: owns state and (later) will call the real login API.
- * The Login page stays thin: it reads these values and passes them into dumb inputs.
- *
- * When Backend / Frontend-2 wires FastAPI:
- * - Replace the fake `setTimeout` with `fetch` or your API client.
- * - Persist JWT in memory or secure storage.
- * - Trigger React Router navigation on success.
+ * useLoginForm owns the login form state plus the POST request to FastAPI.
+ * This keeps API details out of the page component so the page can stay focused on layout.
  */
 
 const initialValues = {
@@ -19,6 +16,7 @@ export function useLoginForm() {
   const [values, setValues] = useState(initialValues)
   const [errors, setErrors] = useState({})
   const [statusMessage, setStatusMessage] = useState('')
+  const [errorMessage, setErrorMessage] = useState('')
   const [isSubmitting, setIsSubmitting] = useState(false)
 
   const onChange = useCallback((field) => {
@@ -27,6 +25,7 @@ export function useLoginForm() {
       setValues((prev) => ({ ...prev, [field]: value }))
       setErrors((prev) => ({ ...prev, [field]: '' }))
       setStatusMessage('')
+      setErrorMessage('')
     }
   }, [])
 
@@ -39,27 +38,42 @@ export function useLoginForm() {
   }, [values.email, values.password])
 
   const onSubmit = useCallback(
-    (event) => {
+    async (event) => {
       event.preventDefault()
       setStatusMessage('')
+      setErrorMessage('')
       if (!validate()) return
 
       setIsSubmitting(true)
-      // Pretend network latency — swap for real API integration.
-      window.setTimeout(() => {
-        setIsSubmitting(false)
+
+      try {
+        const result = await loginWithEmail({
+          email: values.email.trim(),
+          password: values.password,
+        })
+
+        saveAuthSession(result)
         setStatusMessage(
-          `Welcome back — we would now log in "${values.email}" once the API is connected.`,
+          `Welcome back, ${result?.user?.email || values.email.trim()}. You are now signed in.`,
         )
-      }, 600)
+      } catch (error) {
+        setErrorMessage(
+          error instanceof Error
+            ? error.message
+            : 'We could not sign you in. Please try again.',
+        )
+      } finally {
+        setIsSubmitting(false)
+      }
     },
-    [validate, values.email],
+    [validate, values.email, values.password],
   )
 
   return {
     values,
     errors,
     statusMessage,
+    errorMessage,
     isSubmitting,
     onChange,
     onSubmit,

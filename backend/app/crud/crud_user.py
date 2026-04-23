@@ -22,11 +22,13 @@ def create_user(
     *,
     email: str,
     hashed_password: str,
+    user_role: str,
     pregnancy_week: int | None,
 ) -> User:
     user = User(
         email=email,
         hashed_password=hashed_password,
+        user_role=user_role,
         pregnancy_week=pregnancy_week,
     )
     db.add(user)

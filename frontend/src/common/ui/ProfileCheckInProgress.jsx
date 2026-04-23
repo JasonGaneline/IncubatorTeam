@@ -1,5 +1,5 @@
 /**
- * ProfileCheckInProgress — mood check-in snapshot (placeholders until charts link to API).
+ * ProfileCheckInProgress shows real check-in counts from the API.
  */
 
 export function ProfileCheckInProgress({ progress }) {
@@ -21,9 +21,7 @@ export function ProfileCheckInProgress({ progress }) {
       >
         Mental health check-in progress
       </h2>
-      <p className="mt-1 text-sm text-muted-foreground">
-        Mock data — this block will sync with your daily check-ins from the backend.
-      </p>
+      <p className="mt-1 text-sm text-muted-foreground">This reflects your saved check-ins.</p>
 
       <div className="mt-5">
         <div className="flex items-baseline justify-between gap-2 text-sm">

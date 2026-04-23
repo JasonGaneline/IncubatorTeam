@@ -1,4 +1,4 @@
-"""User ORM model — mirrors the core account fields from the product spec."""
+"""User ORM model - mirrors the core account fields from the product spec."""
 
 from __future__ import annotations
 
@@ -21,6 +21,11 @@ class User(Base):
     )
     email: Mapped[str] = mapped_column(String(320), unique=True, index=True, nullable=False)
     hashed_password: Mapped[str] = mapped_column(String(255), nullable=False)
+    user_role: Mapped[str] = mapped_column(
+        String(64),
+        nullable=False,
+        default="information_only",
+    )
 
     # Nullable until onboarding collects it; validate ranges in Pydantic when updating.
     pregnancy_week: Mapped[int | None] = mapped_column(Integer, nullable=True)

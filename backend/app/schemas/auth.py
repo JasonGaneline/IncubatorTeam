@@ -1,13 +1,14 @@
-"""Authentication request/response schemas — input validation for signup & login."""
+"""Authentication request/response schemas - input validation for signup & login."""
 
-from pydantic import BaseModel, EmailStr, Field, field_validator
+from pydantic import BaseModel, EmailStr, Field, field_validator, model_validator
 
-from app.schemas.user import UserPublic
+from app.schemas.user import UserPublic, UserRole
 
 
 class UserSignup(BaseModel):
     email: EmailStr
     password: str = Field(min_length=8, max_length=128)
+    user_role: UserRole
     pregnancy_week: int | None = Field(default=None, ge=0, le=42)
 
     @field_validator("password")
@@ -17,10 +18,27 @@ class UserSignup(BaseModel):
             raise ValueError("Password cannot be empty")
         return v
 
+    @model_validator(mode="after")
+    def validate_role_specific_fields(self) -> "UserSignup":
+        if self.user_role == "pregnant_woman" and self.pregnancy_week is None:
+            raise ValueError("Pregnancy week is required for pregnant women.")
+
+        if self.user_role != "pregnant_woman":
+            self.pregnancy_week = None
+
+        return self
+
 
 class UserLogin(BaseModel):
     email: EmailStr
     password: str = Field(min_length=1, max_length=128)
+
+
+class GoogleAuthRequest(BaseModel):
+    credential: str = Field(
+        min_length=1,
+        description="JWT credential returned by Google's popup button.",
+    )
 
 
 class Token(BaseModel):

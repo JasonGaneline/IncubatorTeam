@@ -6,12 +6,9 @@ import { SignupPage } from './pages/auth/SignupPage.jsx'
 import { MentalHealthCheckInPage } from './pages/checkin/MentalHealthCheckInPage.jsx'
 import { CommunityForumPage } from './pages/community/CommunityForumPage.jsx'
 import { ProfilePage } from './pages/profile/ProfilePage.jsx'
-import { SupabaseTodosDemoPage } from './pages/SupabaseTodosDemoPage.jsx'
 
 /**
- * App — top-level route table.
- * Add new pages here as features grow (check-in, community, profile, emergency).
- * Private routes can wrap components in a guard once JWT logic exists.
+ * App - top-level route table.
  */
 
 function App() {
@@ -23,8 +20,6 @@ function App() {
       <Route path="/profile" element={<ProfilePage />} />
       <Route path="/login" element={<LoginPage />} />
       <Route path="/signup" element={<SignupPage />} />
-      <Route path="/dev/supabase" element={<SupabaseTodosDemoPage />} />
-      {/* Unknown paths bounce home for now — swap for a 404 page later */}
       <Route path="*" element={<Navigate to="/" replace />} />
     </Routes>
   )

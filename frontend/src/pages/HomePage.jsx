@@ -3,8 +3,7 @@ import { Link } from 'react-router-dom'
 import { MainNav } from '../layouts/MainNav.jsx'
 
 /**
- * HomePage — lightweight landing route so Router has more than auth.
- * Replace this content when marketing / dashboard designs arrive.
+ * HomePage - lightweight landing route.
  */
 
 export function HomePage() {
@@ -20,9 +19,8 @@ export function HomePage() {
             You are building something beautiful.
           </h1>
           <p className="mt-4 text-lg text-muted-foreground">
-            Explore check-in, community, and profile — authentication and APIs connect when
-            your backend teammates are ready. Use the nav bar on any screen to move between
-            sections.
+            Explore check-in, community, and profile using real authentication and
+            database data. Use the nav bar on any screen to move between sections.
           </p>
         </div>
         <div className="flex flex-wrap gap-3">
@@ -55,12 +53,6 @@ export function HomePage() {
             className="inline-flex rounded-xl border border-dashed border-border px-5 py-3 text-sm font-semibold text-muted-foreground"
           >
             Sign up
-          </Link>
-          <Link
-            to="/dev/supabase"
-            className="inline-flex rounded-xl border border-dashed border-border px-5 py-3 text-sm font-semibold text-muted-foreground"
-          >
-            Supabase demo (todos)
           </Link>
         </div>
       </div>

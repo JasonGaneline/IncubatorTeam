@@ -6,13 +6,14 @@ import uuid
 from datetime import UTC, datetime
 
 from sqlalchemy import func, select
+from sqlalchemy.orm import selectinload
 from sqlalchemy.orm import Session
 
 from app.models.post import Post
 from app.models.post_vote import PostVote
 from app.models.reply import Reply
 from app.models.user import User
-from app.schemas.community import PostFeedItem
+from app.schemas.community import PostFeedItem, ReplyFeedItem
 
 
 def create_post(
@@ -130,6 +131,7 @@ def get_feed_for_user(
             my_vote_sq.label("my_vote"),
         )
         .join(User, Post.author_id == User.id)
+        .options(selectinload(Post.replies).selectinload(Reply.author))
         .order_by(Post.updated_at.desc())
         .limit(limit)
     )
@@ -154,6 +156,16 @@ def get_feed_for_user(
                 my_vote=int(mv) if mv is not None else None,
                 author_display=author_display,
                 author_id=author_id_out,
+                replies=[
+                    ReplyFeedItem(
+                        id=reply.id,
+                        body=reply.body,
+                        created_at=reply.created_at,
+                        author_display=_display_from_email(reply.author.email),
+                        author_id=reply.author_id,
+                    )
+                    for reply in post.replies
+                ],
             )
         )
     return out

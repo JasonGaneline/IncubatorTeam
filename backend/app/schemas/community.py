@@ -54,6 +54,14 @@ class ReplyRead(BaseModel):
     created_at: datetime
 
 
+class ReplyFeedItem(BaseModel):
+    id: UUID
+    body: str
+    created_at: datetime
+    author_display: str
+    author_id: UUID | None = None
+
+
 class PostFeedItem(BaseModel):
     """Single row in the community feed with aggregates."""
 
@@ -72,6 +80,7 @@ class PostFeedItem(BaseModel):
     # Either "Anonymous" or a display handle derived from the author record.
     author_display: str
     author_id: UUID | None = None
+    replies: list[ReplyFeedItem] = []
 
 
 class PostFeedResponse(BaseModel):
