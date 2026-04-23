@@ -1,6 +1,8 @@
 import { useCallback, useMemo, useState } from 'react'
+import { useNavigate } from 'react-router-dom'
 
 import { saveAuthSession, signupWithEmail } from '../utils/authApi.js'
+import { useAuth } from '../context/AuthContext.jsx'
 
 const ROLE_OPTIONS = [
   {
@@ -35,6 +37,8 @@ const initialValues = {
 }
 
 export function useSignupForm() {
+  const navigate = useNavigate()
+  const { setAuthUser } = useAuth()
   const [values, setValues] = useState(initialValues)
   const [errors, setErrors] = useState({})
   const [statusMessage, setStatusMessage] = useState('')
@@ -118,7 +122,11 @@ export function useSignupForm() {
         })
 
         saveAuthSession(result)
+        setAuthUser(result?.user)
         setStatusMessage(`Account created for ${values.displayName}. You are now signed in.`)
+
+        // Redirect to home after a short delay to show success message
+        setTimeout(() => navigate('/'), 500)
       } catch (error) {
         setErrorMessage(
           error instanceof Error
@@ -137,6 +145,8 @@ export function useSignupForm() {
       values.password,
       values.pregnancyWeek,
       values.userRole,
+      setAuthUser,
+      navigate,
     ],
   )
 

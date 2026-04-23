@@ -11,6 +11,7 @@ response is built (see `get_db` in `app.core.database`).
 """
 
 import secrets
+import uuid
 
 from fastapi import APIRouter, Depends, HTTPException, status
 from google.auth.transport import requests as google_requests
@@ -19,9 +20,9 @@ from sqlalchemy.orm import Session
 
 from app.api.deps import get_db
 from app.core.config import get_settings
-from app.core.security import create_access_token, hash_password, verify_password
+from app.core.security import create_access_token, create_refresh_token, hash_password, verify_password, decode_refresh_token
 from app.crud import crud_user
-from app.schemas.auth import GoogleAuthRequest, TokenWithUser, UserLogin, UserSignup
+from app.schemas.auth import GoogleAuthRequest, RefreshTokenRequest, TokenWithRefresh, TokenWithUser, UserLogin, UserSignup
 from app.schemas.user import UserPublic
 
 router = APIRouter(prefix="/auth", tags=["authentication"])
@@ -36,8 +37,10 @@ def _issue_token_with_user(user) -> TokenWithUser:
         subject=str(user.id),
         extra_claims={"auth_provider": "google"},
     )
+    refresh_token = create_refresh_token(subject=str(user.id))
     return TokenWithUser(
         access_token=access_token,
+        refresh_token=refresh_token,
         user=UserPublic.model_validate(user),
     )
 
@@ -66,8 +69,10 @@ def signup(payload: UserSignup, db: Session = Depends(get_db)) -> TokenWithUser:
     )
 
     access_token = create_access_token(subject=str(user.id))
+    refresh_token = create_refresh_token(subject=str(user.id))
     return TokenWithUser(
         access_token=access_token,
+        refresh_token=refresh_token,
         user=UserPublic.model_validate(user),
     )
 
@@ -88,8 +93,10 @@ def login(payload: UserLogin, db: Session = Depends(get_db)) -> TokenWithUser:
         )
 
     access_token = create_access_token(subject=str(user.id))
+    refresh_token = create_refresh_token(subject=str(user.id))
     return TokenWithUser(
         access_token=access_token,
+        refresh_token=refresh_token,
         user=UserPublic.model_validate(user),
     )
 
@@ -147,3 +154,69 @@ def google_auth(
         )
 
     return _issue_token_with_user(user)
+
+
+@router.post(
+    "/refresh",
+    response_model=TokenWithRefresh,
+    summary="Obtain a new access token using a refresh token",
+)
+def refresh(
+    payload: RefreshTokenRequest,
+    db: Session = Depends(get_db),
+) -> TokenWithRefresh:
+    """
+    Exchange a valid refresh token for a new access token.
+    Refresh tokens are longer-lived and can be used when the access token expires.
+    """
+    refresh_payload = decode_refresh_token(payload.refresh_token)
+
+    if refresh_payload is None or refresh_payload.get("sub") is None:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Invalid or expired refresh token.",
+            headers={"WWW-Authenticate": "Bearer"},
+        )
+
+    try:
+        user_id = uuid.UUID(str(refresh_payload["sub"]))
+    except (ValueError, TypeError):
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Invalid refresh token subject",
+            headers={"WWW-Authenticate": "Bearer"},
+        )
+
+    user = crud_user.get_user_by_id(db, user_id=user_id)
+    if user is None:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="User no longer exists",
+            headers={"WWW-Authenticate": "Bearer"},
+        )
+
+    # Issue a fresh access token (refresh token remains valid)
+    access_token = create_access_token(subject=str(user.id))
+    new_refresh_token = create_refresh_token(subject=str(user.id))
+
+    return TokenWithRefresh(
+        access_token=access_token,
+        refresh_token=new_refresh_token,
+    )
+
+
+@router.post(
+    "/logout",
+    status_code=status.HTTP_204_NO_CONTENT,
+    summary="Logout the current user session",
+)
+def logout() -> None:
+    """
+    Logout endpoint. For stateless JWT auth, this is mainly a frontend operation
+    (clear tokens from localStorage). This endpoint exists for API consistency
+    and potential future stateful token blacklisting.
+    """
+    # In a stateless JWT system, the server doesn't maintain sessions.
+    # The frontend clears the tokens. This endpoint could be extended
+    # to maintain a blacklist or revocation list in the future.
+    return None

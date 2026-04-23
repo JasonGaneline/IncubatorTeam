@@ -46,9 +46,29 @@ class Token(BaseModel):
     token_type: str = "bearer"
 
 
+class TokenWithRefresh(BaseModel):
+    """Token response with refresh token for token rotation."""
+
+    access_token: str
+    refresh_token: str | None = None
+    token_type: str = "bearer"
+    expires_in: int = 3600  # seconds (1 hour for access token)
+
+
 class TokenWithUser(BaseModel):
     """Convenience payload for SPA clients: token plus a safe user projection."""
 
     access_token: str
+    refresh_token: str | None = None
     token_type: str = "bearer"
     user: UserPublic
+    expires_in: int = 3600
+
+
+class RefreshTokenRequest(BaseModel):
+    """Request to refresh an expired access token."""
+
+    refresh_token: str = Field(
+        min_length=1,
+        description="Valid refresh token issued during login/signup.",
+    )

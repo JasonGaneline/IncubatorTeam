@@ -60,3 +60,41 @@ def decode_access_token(token: str) -> dict[str, Any] | None:
         return jwt.decode(token, settings.SECRET_KEY, algorithms=[settings.JWT_ALGORITHM])
     except JWTError:
         return None
+
+
+def create_refresh_token(
+    subject: str,
+    expires_delta: timedelta | None = None,
+) -> str:
+    """
+    Build a refresh token JWT with a longer expiry (7 days).
+    Refresh tokens are used to obtain new access tokens without re-entering credentials.
+    """
+    settings = get_settings()
+    now = datetime.now(UTC)
+    # Refresh tokens live for 7 days (can be configured)
+    expire = now + (
+        expires_delta
+        if expires_delta is not None
+        else timedelta(days=7)
+    )
+    to_encode: dict[str, Any] = {
+        "sub": subject,
+        "exp": expire,
+        "iat": now,
+        "type": "refresh",
+    }
+    return jwt.encode(to_encode, settings.SECRET_KEY, algorithm=settings.JWT_ALGORITHM)
+
+
+def decode_refresh_token(token: str) -> dict[str, Any] | None:
+    """Return payload dict if refresh token is valid; otherwise None."""
+    settings = get_settings()
+    try:
+        payload = jwt.decode(token, settings.SECRET_KEY, algorithms=[settings.JWT_ALGORITHM])
+        # Verify it's actually a refresh token
+        if payload.get("type") != "refresh":
+            return None
+        return payload
+    except JWTError:
+        return None

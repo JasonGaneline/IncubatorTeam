@@ -1,6 +1,8 @@
 import { useCallback, useState } from 'react'
+import { useNavigate } from 'react-router-dom'
 
 import { loginWithEmail, saveAuthSession } from '../utils/authApi.js'
+import { useAuth } from '../context/AuthContext.jsx'
 
 /**
  * useLoginForm owns the login form state plus the POST request to FastAPI.
@@ -13,6 +15,8 @@ const initialValues = {
 }
 
 export function useLoginForm() {
+  const navigate = useNavigate()
+  const { setAuthUser } = useAuth()
   const [values, setValues] = useState(initialValues)
   const [errors, setErrors] = useState({})
   const [statusMessage, setStatusMessage] = useState('')
@@ -53,9 +57,13 @@ export function useLoginForm() {
         })
 
         saveAuthSession(result)
+        setAuthUser(result?.user)
         setStatusMessage(
           `Welcome back, ${result?.user?.email || values.email.trim()}. You are now signed in.`,
         )
+
+        // Redirect to home after a short delay to show success message
+        setTimeout(() => navigate('/'), 500)
       } catch (error) {
         setErrorMessage(
           error instanceof Error
@@ -66,7 +74,7 @@ export function useLoginForm() {
         setIsSubmitting(false)
       }
     },
-    [validate, values.email, values.password],
+    [validate, values.email, values.password, setAuthUser, navigate],
   )
 
   return {

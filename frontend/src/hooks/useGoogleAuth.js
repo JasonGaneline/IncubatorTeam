@@ -1,6 +1,8 @@
 import { useCallback, useState } from 'react'
+import { useNavigate } from 'react-router-dom'
 
 import { saveAuthSession } from '../utils/authApi.js'
+import { useAuth } from '../context/AuthContext.jsx'
 
 const DEFAULT_API_BASE_URL = 'http://localhost:8000/api/v1'
 
@@ -38,6 +40,8 @@ async function postGoogleCredential(credential) {
  * 4. FastAPI can then create/find the user and return our app's own JWT/session payload.
  */
 export function useGoogleAuth() {
+  const navigate = useNavigate()
+  const { setAuthUser } = useAuth()
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [error, setError] = useState('')
   const [statusMessage, setStatusMessage] = useState('')
@@ -64,6 +68,7 @@ export function useGoogleAuth() {
       const result = await postGoogleCredential(credential)
 
       saveAuthSession(result)
+      setAuthUser(result?.user)
 
       const signedInEmail = result?.user?.email
       setStatusMessage(
@@ -71,6 +76,10 @@ export function useGoogleAuth() {
           ? `Signed in with Google as ${signedInEmail}.`
           : 'Signed in with Google successfully.',
       )
+
+      // Redirect to home after a short delay to show success message
+      setTimeout(() => navigate('/'), 500)
+
       return result
     } catch (requestError) {
       const message =
@@ -83,7 +92,7 @@ export function useGoogleAuth() {
     } finally {
       setIsSubmitting(false)
     }
-  }, [])
+  }, [setAuthUser, navigate])
 
   const handleGoogleError = useCallback(() => {
     setError('The Google sign-in popup was closed or could not finish.')
