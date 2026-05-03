@@ -65,3 +65,19 @@ export function clearAuthSession() {
   window.localStorage.removeItem('refresh_token')
   window.localStorage.removeItem('auth_user')
 }
+
+export async function followUser(userId) {
+  return apiRequest(`/users/${userId}/follow`, {
+    method: 'POST',
+  })
+}
+
+export async function unfollowUser(userId) {
+  return apiRequest(`/users/${userId}/follow`, {
+    method: 'DELETE',
+  })
+}
+
+export async function getPublicUserProfile(userId) {
+  return apiRequest(`/profile/${userId}`)
+}

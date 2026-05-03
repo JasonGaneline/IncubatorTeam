@@ -21,6 +21,7 @@ function AppRoutes() {
       <Route path="/check-in" element={<ProtectedRoute element={<MentalHealthCheckInPage />} />} />
       <Route path="/community" element={<ProtectedRoute element={<CommunityForumPage />} />} />
       <Route path="/profile" element={<ProtectedRoute element={<ProfilePage />} />} />
+      <Route path="/profile/:userId" element={<ProfilePage />} />
       <Route path="/login" element={<LoginPage />} />
       <Route path="/signup" element={<SignupPage />} />
       <Route path="*" element={<Navigate to="/" replace />} />

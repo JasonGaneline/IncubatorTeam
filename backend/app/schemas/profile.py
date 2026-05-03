@@ -32,6 +32,19 @@ class UserProfileResponse(BaseModel):
     following_count: int
 
 
+class PublicUserProfileResponse(BaseModel):
+    """Public profile payload for GET /profile/{user_id}."""
+
+    user: UserPublic
+    mood: MoodStatsPublic
+    followers_count: int
+    following_count: int
+    is_following: bool = Field(
+        default=False,
+        description="Whether the current user (if authenticated) is following this user.",
+    )
+
+
 class PregnancyWeekUpdate(BaseModel):
     """PATCH body — set or clear gestational week."""
 

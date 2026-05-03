@@ -53,4 +53,27 @@ def get_current_user(
     return user
 
 
-__all__ = ["get_db", "get_current_user", "security"]
+def get_current_user_optional(
+    credentials: Annotated[HTTPAuthorizationCredentials | None, Depends(HTTPBearer(auto_error=False))] = None,
+    db: Session = Depends(get_db),
+) -> User | None:
+    """Optional authentication — returns None if not authenticated, or the User if valid."""
+    if credentials is None:
+        return None
+
+    token = credentials.credentials
+    payload = decode_access_token(token)
+    if payload is None or payload.get("sub") is None:
+        # Silently ignore invalid tokens for optional auth
+        return None
+
+    try:
+        user_id = uuid.UUID(str(payload["sub"]))
+    except (ValueError, TypeError):
+        return None
+
+    user = crud_user.get_user_by_id(db, user_id=user_id)
+    return user  # Returns None if user not found
+
+
+__all__ = ["get_db", "get_current_user", "get_current_user_optional", "security"]

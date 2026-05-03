@@ -13,7 +13,7 @@ SignUp / LogIn w/ User authentication
     track progress over time
     allows them to reflect on how they are feeling each day
 
-2. (Potentially) - AI chatbot trained on pregnancy and birth, mothers can report symptoms and receive advice
+2. start (Potentially) - AI chatbot trained on pregnancy and birth, mothers can report symptoms and receive advice
     can report abnormalities throughout pregnancy. RAG feature that uses AI with database information to suggest some kind of personalized support
 
 3. in-app emergency feature - notify doctor and emergency services
@@ -22,19 +22,34 @@ SignUp / LogIn w/ User authentication
     post
     reply (notifies you when others reply to you)
     upvote/downvote system
-    can follow other profiles and dm
+    **can follow other profiles
     anonymous posting option (can request to follow/dm)
+
 
 5. profile
     displays:
         mental health check-in progress
-        followers/following
+        **followers/following
         direct messaging feature
         representation of size of baby based on # of weeks pregnant
             e.g. size of an apple, orange, watermelon, etc.
         estimation of when you will hear heartbeat, find out gender
+            **range: weeks 1-5, 5-10, 10-15, etc. with hardcoded text saying what is happening
         tell mother what specifically is happening in her body at any point during pregnancy
             e.g. baby's organs are being developed
+        ONCE SIGNED IN, remove the login/sign up buttons and add a log out button
+
+
+6. Sign Up as a Doctor (verify through API)
+check marked profiles to show that they are legit
+you can dm doctors as well
+DoctorsAPI
+another type of account with different features
+CoPilot
+
+
+7. Conversion to Android Mobile App with Capacitor
+
 
 Tech Stack:
 Frontend: React

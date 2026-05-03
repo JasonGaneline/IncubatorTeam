@@ -12,7 +12,7 @@ from app.constants.mood_scores import MOOD_SCORES
 from app.crud import crud_follow
 from app.models.mood_check_in import MoodCheckIn
 from app.models.user import User
-from app.schemas.profile import MoodStatsPublic, UserProfileResponse
+from app.schemas.profile import MoodStatsPublic, UserProfileResponse, PublicUserProfileResponse
 from app.schemas.user import UserPublic
 
 
@@ -103,4 +103,32 @@ def build_profile_response(db: Session, *, user: User) -> UserProfileResponse:
         mood=mood,
         followers_count=followers,
         following_count=following,
+    )
+
+
+def build_public_profile_response(
+    db: Session,
+    *,
+    user: User,
+    current_user_id: uuid.UUID | None = None,
+) -> PublicUserProfileResponse:
+    """Build public profile response with optional follow status for current user."""
+    mood = compute_mood_stats(db, user_id=user.id)
+    followers = crud_follow.count_followers(db, user_id=user.id)
+    following = crud_follow.count_following(db, user_id=user.id)
+
+    is_following = False
+    if current_user_id and current_user_id != user.id:
+        is_following = crud_follow.is_following(
+            db,
+            follower_id=current_user_id,
+            following_id=user.id,
+        )
+
+    return PublicUserProfileResponse(
+        user=UserPublic.model_validate(user),
+        mood=mood,
+        followers_count=followers,
+        following_count=following,
+        is_following=is_following,
     )

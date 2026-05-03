@@ -62,3 +62,14 @@ def count_followers(db: Session, *, user_id: uuid.UUID) -> int:
 def count_following(db: Session, *, user_id: uuid.UUID) -> int:
     q = select(func.count()).select_from(UserFollow).where(UserFollow.follower_id == user_id)
     return int(db.execute(q).scalar_one() or 0)
+
+
+def is_following(
+    db: Session,
+    *,
+    follower_id: uuid.UUID,
+    following_id: uuid.UUID,
+) -> bool:
+    """Check if follower_id is following following_id."""
+    edge = get_follow_edge(db, follower_id=follower_id, following_id=following_id)
+    return edge is not None
