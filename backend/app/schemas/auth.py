@@ -8,6 +8,11 @@ from app.schemas.user import UserPublic, UserRole
 class UserSignup(BaseModel):
     email: EmailStr
     password: str = Field(min_length=8, max_length=128)
+    display_name: str | None = Field(
+        default=None,
+        max_length=150,
+        description="Optional display name (e.g., 'Jane Doe').",
+    )
     user_role: UserRole
     pregnancy_week: int | None = Field(default=None, ge=0, le=42)
 
@@ -27,6 +32,38 @@ class UserSignup(BaseModel):
             self.pregnancy_week = None
 
         return self
+
+
+class DoctorSignup(BaseModel):
+    email: EmailStr
+    password: str = Field(min_length=8, max_length=128)
+    display_name: str | None = Field(
+        default=None,
+        max_length=150,
+        description="Optional display name (e.g., 'Dr. Jane Doe').",
+    )
+    first_name: str = Field(min_length=1, max_length=100)
+    last_name: str = Field(min_length=1, max_length=100)
+    npi_number: str = Field(min_length=10, max_length=10, description="10-digit NPI number")
+
+    @field_validator("password")
+    @classmethod
+    def password_not_blank(cls, v: str) -> str:
+        if not v.strip():
+            raise ValueError("Password cannot be empty")
+        return v
+
+
+class DoctorVerifyRequest(BaseModel):
+    """In-app NPI verification for an already-authenticated user (e.g. via Google).
+
+    Used by the onboarding "Join as a Professional" path: the user is logged in,
+    and we verify their NPI to flip them to a verified_professional role.
+    """
+
+    first_name: str = Field(min_length=1, max_length=100)
+    last_name: str = Field(min_length=1, max_length=100)
+    npi_number: str = Field(min_length=10, max_length=10, description="10-digit NPI number")
 
 
 class UserLogin(BaseModel):

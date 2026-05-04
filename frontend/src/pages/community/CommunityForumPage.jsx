@@ -1,6 +1,5 @@
 import { Button, ForumFeed, InlineNotice, PostCard } from '../../common/ui/index.js'
 import { useCommunityFeed } from '../../hooks/useCommunityFeed.js'
-import { MainNav } from '../../layouts/MainNav.jsx'
 
 /**
  * CommunityForumPage uses the real API for posts, replies, and votes.
@@ -25,8 +24,7 @@ export function CommunityForumPage() {
   } = useCommunityFeed()
 
   return (
-    <div className="min-h-svh bg-background">
-      <MainNav />
+    <div className="min-h-svh bg-background pb-24">
       <ForumFeed
         title="Forum"
         subtitle="A gentle, Reddit-style space for questions and shared experience. Everything here comes from the real app database."
@@ -111,6 +109,9 @@ export function CommunityForumPage() {
             title={post.title}
             body={post.body}
             author={post.author}
+            authorId={post.authorId}
+            isAnonymous={post.isAnonymous}
+            isVerifiedDoctor={post.isVerifiedDoctor}
             timeLabel={post.timeLabel}
             createdAt={post.createdAt}
             voteScore={post.displayScore}

@@ -2,6 +2,7 @@ import { useCallback, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 
 import { loginWithEmail, saveAuthSession } from '../utils/authApi.js'
+import { postLoginPath } from '../utils/profileStatus.js'
 import { useAuth } from '../context/AuthContext.jsx'
 
 /**
@@ -62,8 +63,8 @@ export function useLoginForm() {
           `Welcome back, ${result?.user?.email || values.email.trim()}. You are now signed in.`,
         )
 
-        // Redirect to home after a short delay to show success message
-        setTimeout(() => navigate('/'), 500)
+        const destination = postLoginPath(result?.user)
+        setTimeout(() => navigate(destination, { replace: true }), 500)
       } catch (error) {
         setErrorMessage(
           error instanceof Error

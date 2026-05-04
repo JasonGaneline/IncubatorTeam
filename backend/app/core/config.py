@@ -23,7 +23,8 @@ class Settings(BaseSettings):
     GOOGLE_CLIENT_ID: str | None = None
 
     # Browser clients (React/Vite) need explicit CORS allowlist when calling this API.
-    CORS_ORIGINS: str = "http://localhost:5173"
+    # Default covers common Vite ports and localhost vs 127.0.0.1 hostnames.
+    CORS_ORIGINS: str = "http://localhost:5173,http://127.0.0.1:5173,http://localhost:5174,http://127.0.0.1:5174"
 
     @property
     def cors_origin_list(self) -> list[str]:

@@ -1,41 +1,21 @@
-import { useCallback, useMemo, useState } from 'react'
+import { useCallback, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 
 import { saveAuthSession, signupWithEmail } from '../utils/authApi.js'
+import { postLoginPath } from '../utils/profileStatus.js'
 import { useAuth } from '../context/AuthContext.jsx'
-
-const ROLE_OPTIONS = [
-  {
-    value: 'pregnant_woman',
-    label: 'Pregnant woman',
-    description: 'I am currently pregnant and want support during pregnancy.',
-  },
-  {
-    value: 'spouse_of_pregnant_woman',
-    label: 'Spouse of a pregnant woman',
-    description: 'I am supporting a pregnant partner and want guidance.',
-  },
-  {
-    value: 'soon_to_be_pregnant',
-    label: 'Soon-to-be pregnant woman',
-    description: 'I am preparing for pregnancy and gathering information early.',
-  },
-  {
-    value: 'information_only',
-    label: 'Information-only user',
-    description: 'I am here to learn and use the app for information.',
-  },
-]
 
 const initialValues = {
   displayName: '',
   email: '',
   password: '',
   confirmPassword: '',
-  userRole: 'pregnant_woman',
-  pregnancyWeek: '',
 }
 
+/**
+ * Email/password signup without choosing account type here — that happens in
+ * /onboarding (same five-option flow as Google users).
+ */
 export function useSignupForm() {
   const navigate = useNavigate()
   const { setAuthUser } = useAuth()
@@ -45,23 +25,12 @@ export function useSignupForm() {
   const [errorMessage, setErrorMessage] = useState('')
   const [isSubmitting, setIsSubmitting] = useState(false)
 
-  const requiresPregnancyWeek = values.userRole === 'pregnant_woman'
-
   const onChange = useCallback((field) => {
     return (event) => {
-      const value =
-        field === 'userRole'
-          ? event.target.value
-          : field === 'pregnancyWeek'
-            ? event.target.value.replace(/[^\d]/g, '')
-            : event.target.value
-
+      const value = event.target.value
       setValues((prev) => ({
         ...prev,
         [field]: value,
-        ...(field === 'userRole' && value !== 'pregnant_woman'
-          ? { pregnancyWeek: '' }
-          : {}),
       }))
       setErrors((prev) => ({ ...prev, [field]: '' }))
       setStatusMessage('')
@@ -81,28 +50,9 @@ export function useSignupForm() {
     if (values.password !== values.confirmPassword) {
       next.confirmPassword = 'Both password fields need to match.'
     }
-    if (!values.userRole) {
-      next.userRole = 'Please choose the option that best describes you.'
-    }
-    if (requiresPregnancyWeek) {
-      const weekNumber = Number(values.pregnancyWeek)
-      if (!values.pregnancyWeek) {
-        next.pregnancyWeek = 'Please add your current pregnancy week.'
-      } else if (!Number.isInteger(weekNumber) || weekNumber < 0 || weekNumber > 42) {
-        next.pregnancyWeek = 'Pregnancy week must be a whole number from 0 to 42.'
-      }
-    }
     setErrors(next)
     return Object.keys(next).length === 0
-  }, [
-    requiresPregnancyWeek,
-    values.confirmPassword,
-    values.displayName,
-    values.email,
-    values.password,
-    values.pregnancyWeek,
-    values.userRole,
-  ])
+  }, [values.confirmPassword, values.displayName, values.email, values.password])
 
   const onSubmit = useCallback(
     async (event) => {
@@ -117,16 +67,17 @@ export function useSignupForm() {
         const result = await signupWithEmail({
           email: values.email.trim(),
           password: values.password,
-          userRole: values.userRole,
-          pregnancyWeek: requiresPregnancyWeek ? Number(values.pregnancyWeek) : null,
+          displayName: values.displayName.trim(),
+          userRole: 'information_only',
+          pregnancyWeek: null,
         })
 
         saveAuthSession(result)
         setAuthUser(result?.user)
-        setStatusMessage(`Account created for ${values.displayName}. You are now signed in.`)
+        setStatusMessage(`Account created for ${values.displayName.trim()}. You are now signed in.`)
 
-        // Redirect to home after a short delay to show success message
-        setTimeout(() => navigate('/'), 500)
+        const destination = postLoginPath(result?.user)
+        setTimeout(() => navigate(destination, { replace: true }), 500)
       } catch (error) {
         setErrorMessage(
           error instanceof Error
@@ -137,20 +88,8 @@ export function useSignupForm() {
         setIsSubmitting(false)
       }
     },
-    [
-      requiresPregnancyWeek,
-      validate,
-      values.displayName,
-      values.email,
-      values.password,
-      values.pregnancyWeek,
-      values.userRole,
-      setAuthUser,
-      navigate,
-    ],
+    [validate, values.displayName, values.email, values.password, setAuthUser, navigate],
   )
-
-  const roleOptions = useMemo(() => ROLE_OPTIONS, [])
 
   return {
     values,
@@ -158,8 +97,6 @@ export function useSignupForm() {
     statusMessage,
     errorMessage,
     isSubmitting,
-    roleOptions,
-    requiresPregnancyWeek,
     onChange,
     onSubmit,
   }

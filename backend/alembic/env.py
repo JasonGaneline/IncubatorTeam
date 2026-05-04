@@ -22,7 +22,16 @@ sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 
 from app.core.config import get_settings  # noqa: E402
 from app.core.database import Base  # noqa: E402
-from app.models import MoodCheckIn, Post, PostVote, Reply, User, UserFollow  # noqa: F401, E402
+from app.models import (  # noqa: F401, E402
+    FollowRequest,
+    Message,
+    MoodCheckIn,
+    Post,
+    PostVote,
+    Reply,
+    User,
+    UserFollow,
+)
 
 config = context.config
 

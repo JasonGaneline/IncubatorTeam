@@ -4,7 +4,7 @@ import { Link } from 'react-router-dom'
  * AuthLayout — dumb layout wrapper shared by Login and Signup.
  * It only arranges spacing and background; no auth logic lives here.
  *
- * When `useAppShell` is true, the page sits under MainNav (no second full-viewport lock).
+ * When `useAppShell` is true, use a tighter vertical rhythm (bottom nav is global in App).
  */
 
 export function AuthLayout({

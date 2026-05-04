@@ -6,7 +6,6 @@ import {
   ReflectionTextArea,
 } from '../../common/ui/index.js'
 import { useMentalHealthCheckIn } from '../../hooks/useMentalHealthCheckIn.js'
-import { MainNav } from '../../layouts/MainNav.jsx'
 
 /**
  * MentalHealthCheckInPage is backed by the real check-in API and history.
@@ -30,8 +29,7 @@ export function MentalHealthCheckInPage() {
   } = useMentalHealthCheckIn()
 
   return (
-    <div className="min-h-svh bg-background">
-      <MainNav />
+    <div className="min-h-svh bg-background pb-24">
       <div className="mx-auto max-w-3xl px-4 py-8 sm:px-6">
         <header className="mb-8">
           <p className="text-sm font-semibold uppercase tracking-wide text-primary">

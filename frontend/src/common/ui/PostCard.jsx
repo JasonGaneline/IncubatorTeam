@@ -1,6 +1,12 @@
 /**
  * PostCard renders a single real community post with its replies and vote actions.
+ * 
+ * If isAnonymous is false, the author name is a clickable link to their profile.
+ * If isAnonymous is true, the author name is plain text (no profile link).
+ * If isVerifiedDoctor is true, shows a checkmark next to the author name.
  */
+
+import { Link } from 'react-router-dom'
 
 import { Button } from './Button.jsx'
 
@@ -9,6 +15,9 @@ export function PostCard({
   title,
   body,
   author,
+  authorId,
+  isAnonymous = false,
+  isVerifiedDoctor = false,
   timeLabel,
   createdAt,
   voteScore,
@@ -57,7 +66,17 @@ export function PostCard({
           <h2 className="text-base font-semibold text-foreground sm:text-lg">{title}</h2>
         </header>
         <p className="mt-1 text-xs text-muted-foreground">
-          <span className="font-medium text-secondary-foreground">{author}</span>
+          {isAnonymous ? (
+            <span className="font-medium text-secondary-foreground">{author}</span>
+          ) : (
+            <Link
+              to={`/profile/${authorId}`}
+              className="font-medium text-primary hover:underline flex items-center gap-1 inline-flex"
+            >
+              {author}
+              {isVerifiedDoctor && <span className="text-green-600" title="Verified Doctor">✓</span>}
+            </Link>
+          )}
           <span aria-hidden> · </span>
           {createdAt ? <time dateTime={createdAt}>{timeLabel}</time> : <span>{timeLabel}</span>}
         </p>

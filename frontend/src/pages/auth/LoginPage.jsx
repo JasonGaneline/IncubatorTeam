@@ -7,7 +7,6 @@ import {
 } from '../../common/ui/index.js'
 import { useGoogleAuth } from '../../hooks/useGoogleAuth.js'
 import { useLoginForm } from '../../hooks/useLoginForm.js'
-import { MainNav } from '../../layouts/MainNav.jsx'
 
 /**
  * LoginPage composes presentational pieces with the login hook.
@@ -34,8 +33,7 @@ export function LoginPage() {
   } = useGoogleAuth()
 
   return (
-    <div className="flex min-h-svh flex-col bg-background">
-      <MainNav />
+    <div className="flex min-h-svh flex-col bg-background pb-24">
       <AuthLayout
         useAppShell
         title="Welcome back"

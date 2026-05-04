@@ -3,6 +3,7 @@ import { apiRequest } from './apiClient.js'
 export async function signupWithEmail({
   email,
   password,
+  displayName,
   userRole,
   pregnancyWeek = null,
 }) {
@@ -11,6 +12,7 @@ export async function signupWithEmail({
     body: JSON.stringify({
       email,
       password,
+      display_name: displayName || null,
       user_role: userRole,
       pregnancy_week: pregnancyWeek,
     }),
@@ -80,4 +82,45 @@ export async function unfollowUser(userId) {
 
 export async function getPublicUserProfile(userId) {
   return apiRequest(`/profile/${userId}`)
+}
+
+export async function signupDoctor({
+  email,
+  password,
+  first_name,
+  last_name,
+  npi_number,
+  display_name,
+}) {
+  return apiRequest('/auth/signup/doctor', {
+    method: 'POST',
+    body: JSON.stringify({
+      email,
+      password,
+      first_name,
+      last_name,
+      npi_number,
+      display_name,
+    }),
+  })
+}
+
+/**
+ * Verify the currently-authenticated user (e.g. via Google) as a professional
+ * by posting their NPI to the backend, which validates against the public
+ * NPPES NPI Registry and flips the user's role to `verified_professional`.
+ */
+export async function verifyDoctor({ first_name, last_name, npi_number }) {
+  return apiRequest('/auth/verify-doctor', {
+    method: 'POST',
+    body: JSON.stringify({ first_name, last_name, npi_number }),
+  })
+}
+
+/** Update the current user's profile via the spec-named PUT /users/me. */
+export async function updateMe(payload) {
+  return apiRequest('/users/me', {
+    method: 'PUT',
+    body: JSON.stringify(payload),
+  })
 }

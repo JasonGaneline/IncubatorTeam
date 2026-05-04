@@ -3,9 +3,9 @@
 from datetime import datetime
 from uuid import UUID
 
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, model_validator
 
-from app.schemas.user import UserPublic
+from app.schemas.user import UserPublic, UserRole
 
 
 class MoodStatsPublic(BaseModel):
@@ -49,3 +49,26 @@ class PregnancyWeekUpdate(BaseModel):
     """PATCH body — set or clear gestational week."""
 
     pregnancy_week: int | None = Field(default=None, ge=0, le=42)
+
+
+class ProfileUpdate(BaseModel):
+    """PATCH/PUT body for updating profile fields."""
+
+    display_name: str | None = Field(default=None, max_length=150)
+    bio: str | None = Field(default=None, max_length=500)
+    age: int | None = Field(default=None, ge=0, le=150)
+    profile_picture: str | None = Field(default=None, max_length=400_000)
+    pregnancy_week: int | None = Field(default=None, ge=0, le=42)
+    user_role: UserRole | None = Field(
+        default=None,
+        description="If provided, updates the user's role (e.g. set after onboarding).",
+    )
+
+    @model_validator(mode="after")
+    def validate_pregnant_woman_requires_week(self) -> "ProfileUpdate":
+        """If the role is being set to 'pregnant_woman', pregnancy_week must come along."""
+        if self.user_role == "pregnant_woman" and self.pregnancy_week is None:
+            raise ValueError(
+                "pregnancy_week is required when user_role is 'pregnant_woman'."
+            )
+        return self

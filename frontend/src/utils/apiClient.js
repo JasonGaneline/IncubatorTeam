@@ -111,6 +111,30 @@ async function tryRefreshAccessToken() {
   }
 }
 
+function formatApiErrorDetail(detail) {
+  if (detail == null) return null
+  if (typeof detail === 'string') return detail
+  if (Array.isArray(detail)) {
+    return detail
+      .map((item) => {
+        if (typeof item === 'string') return item
+        if (item && typeof item === 'object' && 'msg' in item) return String(item.msg)
+        try {
+          return JSON.stringify(item)
+        } catch {
+          return 'Invalid request'
+        }
+      })
+      .join('; ')
+  }
+  if (typeof detail === 'object' && 'msg' in detail) return String(detail.msg)
+  try {
+    return JSON.stringify(detail)
+  } catch {
+    return 'The request could not be completed.'
+  }
+}
+
 export async function apiRequest(path, options = {}) {
   let token = getAccessToken()
 
@@ -135,20 +159,37 @@ export async function apiRequest(path, options = {}) {
     headers.set('Authorization', `Bearer ${token}`)
   }
 
-  let response = await fetch(`${getApiBaseUrl()}${path}`, {
-    ...options,
-    headers,
-  })
+  let response
+  try {
+    response = await fetch(`${getApiBaseUrl()}${path}`, {
+      ...options,
+      headers,
+    })
+  } catch (networkError) {
+    const msg =
+      networkError instanceof Error ? networkError.message : 'Network error'
+    throw new Error(
+      msg === 'Failed to fetch'
+        ? 'Could not reach the API. Is the backend running and CORS configured?'
+        : msg,
+    )
+  }
 
   // If we get a 401, try refreshing and retry once
   if (response.status === 401) {
     const newToken = await tryRefreshAccessToken()
     if (newToken) {
       headers.set('Authorization', `Bearer ${newToken}`)
-      response = await fetch(`${getApiBaseUrl()}${path}`, {
-        ...options,
-        headers,
-      })
+      try {
+        response = await fetch(`${getApiBaseUrl()}${path}`, {
+          ...options,
+          headers,
+        })
+      } catch (networkError) {
+        const msg =
+          networkError instanceof Error ? networkError.message : 'Network error'
+        throw new Error(msg)
+      }
     } else {
       clearAuthSession()
     }
@@ -157,7 +198,8 @@ export async function apiRequest(path, options = {}) {
   const data = await response.json().catch(() => null)
 
   if (!response.ok) {
-    throw new Error(data?.detail || 'The request could not be completed.')
+    const detail = formatApiErrorDetail(data?.detail)
+    throw new Error(detail || `Request failed (${response.status})`)
   }
 
   return data

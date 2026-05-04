@@ -69,6 +69,7 @@ class PostFeedItem(BaseModel):
     title: str
     body: str
     is_anonymous: bool
+    is_verified_doctor: bool = False
     created_at: datetime
     updated_at: datetime
     last_activity_at: datetime

@@ -125,6 +125,7 @@ def get_feed_for_user(
         select(
             Post,
             User.email,
+            User.is_verified_doctor,
             reply_count_sq.label("reply_count"),
             up_count_sq.label("upvote_count"),
             down_count_sq.label("downvote_count"),
@@ -136,17 +137,42 @@ def get_feed_for_user(
         .limit(limit)
     )
 
+    stmt = stmt.add_columns(User.user_role, User.display_name)
+
     rows = db.execute(stmt).all()
     out: list[PostFeedItem] = []
-    for post, email, rc, uc, dc, mv in rows:
-        author_display = "Anonymous" if post.is_anonymous else _display_from_email(email)
+    for (
+        post,
+        email,
+        is_verified_doctor,
+        rc,
+        uc,
+        dc,
+        mv,
+        user_role,
+        display_name,
+    ) in rows:
+        author_display = (
+            "Anonymous"
+            if post.is_anonymous
+            else (display_name or _display_from_email(email))
+        )
         author_id_out = None if post.is_anonymous else post.author_id
+        # Anonymous posts never reveal the verified status; otherwise, treat
+        # either is_verified_doctor=True or user_role='verified_professional'
+        # as a verified author.
+        verified_for_feed = (
+            False
+            if post.is_anonymous
+            else bool(is_verified_doctor) or user_role == "verified_professional"
+        )
         out.append(
             PostFeedItem(
                 id=post.id,
                 title=post.title,
                 body=post.body,
                 is_anonymous=post.is_anonymous,
+                is_verified_doctor=verified_for_feed,
                 created_at=post.created_at,
                 updated_at=post.updated_at,
                 last_activity_at=post.updated_at,
@@ -161,7 +187,10 @@ def get_feed_for_user(
                         id=reply.id,
                         body=reply.body,
                         created_at=reply.created_at,
-                        author_display=_display_from_email(reply.author.email),
+                        author_display=(
+                            reply.author.display_name
+                            or _display_from_email(reply.author.email)
+                        ),
                         author_id=reply.author_id,
                     )
                     for reply in post.replies

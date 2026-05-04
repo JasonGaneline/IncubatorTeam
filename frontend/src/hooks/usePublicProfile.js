@@ -1,43 +1,30 @@
 import { useCallback, useEffect, useState } from 'react'
+
 import { getPublicUserProfile } from '../utils/authApi.js'
 import { getBabySizeFromWeek } from '../utils/babySizeFromWeek.js'
-
-function displayNameFromEmail(email) {
-  if (!email) return 'User profile'
-  return email.split('@', 1)[0]
-}
-
-function normalizePublicProfilePayload(raw) {
-  const pregnancyWeek = raw?.user?.pregnancy_week ?? null
-
-  return {
-    user: {
-      id: raw.user.id,
-      email: raw.user.email,
-      displayName: displayNameFromEmail(raw.user.email),
-      pregnancyWeek,
-      dueDate: null,
-    },
-    checkInProgress: {
-      checkInsThisWeek: raw.mood.check_ins_this_week,
-      weeklyGoal: 7,
-      streakDays: raw.mood.streak_days,
-      totalCheckIns: raw.mood.total_check_ins,
-      lastCheckInAt: raw.mood.last_check_in_at,
-      lastMoodLabel: raw.mood.last_mood_label || 'No check-ins yet',
-    },
-    socialCounts: {
-      followers: raw.followers_count,
-      following: raw.following_count,
-    },
-    isFollowing: raw.is_following || false,
-    babySize: getBabySizeFromWeek(pregnancyWeek),
-  }
-}
+import { normalizePublicProfileResponse } from './mapProfileUser.js'
 
 async function fetchPublicProfileFromApi(userId) {
   const response = await getPublicUserProfile(userId)
-  return normalizePublicProfilePayload(response)
+  const base = normalizePublicProfileResponse(response)
+  const pregnancyWeek = base.user?.pregnancy_week ?? null
+
+  return {
+    ...base,
+    checkInProgress: {
+      checkInsThisWeek: response.mood.check_ins_this_week,
+      weeklyGoal: 7,
+      streakDays: response.mood.streak_days,
+      totalCheckIns: response.mood.total_check_ins,
+      lastCheckInAt: response.mood.last_check_in_at,
+      lastMoodLabel: response.mood.last_mood_label || 'No check-ins yet',
+    },
+    socialCounts: {
+      followers: base.followers_count,
+      following: base.following_count,
+    },
+    babySize: getBabySizeFromWeek(pregnancyWeek),
+  }
 }
 
 export function usePublicProfile(userId) {

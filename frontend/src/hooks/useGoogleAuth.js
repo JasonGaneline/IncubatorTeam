@@ -2,6 +2,7 @@ import { useCallback, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 
 import { saveAuthSession } from '../utils/authApi.js'
+import { postLoginPath } from '../utils/profileStatus.js'
 import { useAuth } from '../context/AuthContext.jsx'
 
 const DEFAULT_API_BASE_URL = 'http://localhost:8000/api/v1'
@@ -77,8 +78,11 @@ export function useGoogleAuth() {
           : 'Signed in with Google successfully.',
       )
 
-      // Redirect to home after a short delay to show success message
-      setTimeout(() => navigate('/'), 500)
+      // Returning users with a complete profile go straight to /check-in.
+      // New users (default `information_only` role) land on /onboarding to
+      // pick an account type (and, if pregnant, a gestational week).
+      const destination = postLoginPath(result?.user)
+      setTimeout(() => navigate(destination, { replace: true }), 500)
 
       return result
     } catch (requestError) {

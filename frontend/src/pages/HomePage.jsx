@@ -1,15 +1,12 @@
 import { Link } from 'react-router-dom'
 
-import { MainNav } from '../layouts/MainNav.jsx'
-
 /**
  * HomePage - lightweight landing route.
  */
 
 export function HomePage() {
   return (
-    <div className="min-h-svh bg-background">
-      <MainNav />
+    <div className="min-h-svh bg-background pb-24">
       <div className="mx-auto flex max-w-3xl flex-col justify-center gap-10 px-4 py-16">
         <div>
           <p className="text-sm font-semibold uppercase tracking-wide text-primary">
@@ -20,7 +17,7 @@ export function HomePage() {
           </h1>
           <p className="mt-4 text-lg text-muted-foreground">
             Explore check-in, community, and profile using real authentication and
-            database data. Use the nav bar on any screen to move between sections.
+            database data. Use the bottom navigation to move between sections.
           </p>
         </div>
         <div className="flex flex-wrap gap-3">
