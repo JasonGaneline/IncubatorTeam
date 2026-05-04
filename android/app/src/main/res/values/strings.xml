@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="app_name">Nest &amp; Nurture</string>
+    <string name="title_activity_main">Nest &amp; Nurture</string>
+    <string name="package_name">com.rumad.nestnurture</string>
+    <string name="custom_url_scheme">com.rumad.nestnurture</string>
+</resources>

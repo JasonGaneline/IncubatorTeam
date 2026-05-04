@@ -77,9 +77,15 @@ def compute_mood_stats(db: Session, *, user_id: uuid.UUID) -> MoodStatsPublic:
         top_label = top_row[0]
 
     avg_score: float | None = None
-    moods_q = select(MoodCheckIn.mood_evaluation).where(MoodCheckIn.user_id == user_id)
-    moods = list(db.execute(moods_q).scalars().all())
-    scores = [MOOD_SCORES[m] for m in moods if m in MOOD_SCORES]
+    scores_q = select(MoodCheckIn.mood_score, MoodCheckIn.mood_evaluation).where(
+        MoodCheckIn.user_id == user_id
+    )
+    score_rows = db.execute(scores_q).all()
+    scores = [
+        float(score) if score is not None else float(MOOD_SCORES.get(mood, 0))
+        for score, mood in score_rows
+        if (score is not None) or (mood in MOOD_SCORES)
+    ]
     if scores:
         avg_score = round(sum(scores) / len(scores), 2)
 

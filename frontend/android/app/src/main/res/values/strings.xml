@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="app_name">IncubatorApp</string>
+    <string name="title_activity_main">IncubatorApp</string>
+    <string name="package_name">com.rumad.incubator</string>
+    <string name="custom_url_scheme">com.rumad.incubator</string>
+</resources>

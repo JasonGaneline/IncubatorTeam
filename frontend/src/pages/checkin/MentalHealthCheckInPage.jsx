@@ -14,8 +14,11 @@ import { useMentalHealthCheckIn } from '../../hooks/useMentalHealthCheckIn.js'
 export function MentalHealthCheckInPage() {
   const {
     moodOptions,
-    selectedMoodId,
-    selectMood,
+    moodScoreMap,
+    selectedMoodIds,
+    toggleMood,
+    intensities,
+    updateIntensity,
     reflection,
     setReflectionText,
     submit,
@@ -50,8 +53,11 @@ export function MentalHealthCheckInPage() {
         >
           <MoodSelector
             options={moodOptions}
-            selectedId={selectedMoodId}
-            onSelect={selectMood}
+            selectedIds={selectedMoodIds}
+            onToggle={toggleMood}
+            intensities={intensities}
+            onIntensityChange={updateIntensity}
+            scoreMap={moodScoreMap}
             disabled={isSubmitting}
           />
 

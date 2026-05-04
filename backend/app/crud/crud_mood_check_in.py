@@ -44,11 +44,15 @@ def create_check_in(
     *,
     user_id: uuid.UUID,
     mood_evaluation: str,
+    mood_mix: list[dict] | None,
+    mood_score: float | None,
     reflection_text: str | None,
 ) -> MoodCheckIn:
     row = MoodCheckIn(
         user_id=user_id,
         mood_evaluation=mood_evaluation,
+        mood_mix=mood_mix,
+        mood_score=mood_score,
         reflection_text=reflection_text,
     )
     db.add(row)
